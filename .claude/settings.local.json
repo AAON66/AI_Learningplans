@@ -35,7 +35,12 @@
       "Bash(uvicorn app.main:app:*)",
       "Bash(sqlite3:*)",
       "Bash(chmod +x:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(source:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(bash:*)"
     ]
   }
 }
