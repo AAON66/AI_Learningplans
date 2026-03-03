@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ...core.database import get_db
 from ...core.security import get_current_user
+from ...core.permissions import require_vip
 from ...models.user import User
 from ...schemas.analysis import AnalysisOut, AnalysisGenerate
 from ...services import analysis_service, plan_service
+from ...services.vip_limits import check_ai_usage_limit
 
 router = APIRouter(prefix="/analysis", tags=["analysis"])
 
@@ -20,6 +22,10 @@ def get_by_plan(plan_id: int, db: Session = Depends(get_db), user: User = Depend
 
 @router.post("/generate", response_model=AnalysisOut)
 async def generate(data: AnalysisGenerate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    """生成AI分析（检查VIP权限和使用次数）"""
+    # 检查AI使用次数限制
+    check_ai_usage_limit(db, user.id)
+
     plan = plan_service.get_plan_by_id(db, data.plan_id)
     if not plan or plan.user_id != user.id:
         raise HTTPException(404, "Plan not found")
@@ -27,6 +33,10 @@ async def generate(data: AnalysisGenerate, db: Session = Depends(get_db), user: 
 
 @router.post("/regenerate", response_model=AnalysisOut)
 async def regenerate(data: AnalysisGenerate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    """重新生成AI分析（检查VIP权限和使用次数）"""
+    # 检查AI使用次数限制
+    check_ai_usage_limit(db, user.id)
+
     plan = plan_service.get_plan_by_id(db, data.plan_id)
     if not plan or plan.user_id != user.id:
         raise HTTPException(404, "Plan not found")

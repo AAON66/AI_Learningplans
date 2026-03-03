@@ -13,6 +13,7 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: str
+    is_admin: int = 0
     security_question: Optional[str] = None
     created_at: Optional[datetime] = None
     model_config = {"from_attributes": True}

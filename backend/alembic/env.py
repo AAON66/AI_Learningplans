@@ -7,7 +7,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.core.database import Base
-from app.models import user, plan, analysis, stage, resource, method, progress, checkin
+from app.models import user, plan, analysis, stage, resource, method, progress, checkin, vip, admin
 
 config = context.config
 if config.config_file_name is not None:

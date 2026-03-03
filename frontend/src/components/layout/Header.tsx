@@ -1,9 +1,20 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { useState, useEffect } from 'react'
+import { authService } from '../../services/auth'
 
 export default function Header({ theme }: { theme: { dark: boolean; toggle: () => void } }) {
   const { isAuthenticated, user, logout } = useAuth()
   const nav = useNavigate()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      authService.me().then(r => {
+        setIsAdmin(r.data.is_admin === 1)
+      }).catch(() => {})
+    }
+  }, [isAuthenticated])
   return (
     <header className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -17,6 +28,16 @@ export default function Header({ theme }: { theme: { dark: boolean; toggle: () =
           {isAuthenticated ? (
             <>
               <Link to="/plans" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors">我的计划</Link>
+              <Link to="/vip" className="text-sm flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                VIP
+              </Link>
+              {isAdmin && (
+                <Link to="/admin" className="text-sm flex items-center gap-1 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  管理
+                </Link>
+              )}
               <Link to="/profile" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors">{user?.email}</Link>
               <button onClick={() => { logout(); nav('/login') }} className="text-sm text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">退出</button>
             </>

@@ -10,6 +10,10 @@ import Progress from './pages/Progress'
 import Stats from './pages/Stats'
 import Profile from './pages/Profile'
 import ForgotPassword from './pages/ForgotPassword'
+import VIP from './pages/VIP'
+import Dashboard from './pages/Dashboard'
+import AdminVIP from './pages/AdminVIP'
+import AdminLogin from './pages/AdminLogin'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useTheme } from './hooks/useTheme'
@@ -31,6 +35,10 @@ export default function App() {
           <Route path="/plans/:id/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/plans/:id/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/vip" element={<ProtectedRoute><VIP /></ProtectedRoute>} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<Dashboard />} />
+          <Route path="/admin/vip" element={<AdminVIP />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -5,6 +5,7 @@ from ...core.security import get_current_user
 from ...models.user import User
 from ...schemas.plan import PlanCreate, PlanUpdate, PlanOut
 from ...services import plan_service
+from ...services.vip_limits import check_plan_limit
 
 router = APIRouter(prefix="/plans", tags=["plans"])
 
@@ -17,6 +18,8 @@ def _check_owner(plan, user: User):
 
 @router.post("", response_model=PlanOut)
 def create(data: PlanCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    # 检查计划数量限制
+    check_plan_limit(db, user.id)
     return plan_service.create_plan(db, user.id, data)
 
 @router.get("", response_model=list[PlanOut])

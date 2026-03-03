@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { planService } from '../services/planService'
+import UserLimitsBar from '../components/vip/UserLimitsBar'
 
 const STATUS_MAP: Record<string, string> = {
   draft: '草稿', analysis: '分析中', planning: '规划中', content: '内容推荐',
@@ -56,6 +57,9 @@ export default function Plans() {
           创建新计划
         </Link>
       </div>
+
+      <UserLimitsBar />
+
       <div className="flex gap-2 mb-6">
         {['', 'active', 'completed', 'paused'].map(s => (
           <button key={s} onClick={() => setFilter(s)}

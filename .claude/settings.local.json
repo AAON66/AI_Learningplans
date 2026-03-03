@@ -32,7 +32,10 @@
       "Bash(__NEW_LINE_e7355aaa2e8def0f__ echo:*)",
       "Bash(__NEW_LINE_e1f9f89766073f95__ echo:*)",
       "Bash(netstat:*)",
-      "Bash(uvicorn app.main:app:*)"
+      "Bash(uvicorn app.main:app:*)",
+      "Bash(sqlite3:*)",
+      "Bash(chmod +x:*)",
+      "Bash(mv:*)"
     ]
   }
 }

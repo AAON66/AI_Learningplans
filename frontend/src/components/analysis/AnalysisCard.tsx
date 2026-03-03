@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { planService } from '../../services/planService'
 
 interface Analysis {
@@ -11,6 +12,7 @@ export default function AnalysisCard({ planId, status, onUpdate }: {
 }) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const canGenerate = status === 'draft' || status === 'analysis'
 
@@ -24,11 +26,19 @@ export default function AnalysisCard({ planId, status, onUpdate }: {
 
   const generate = async () => {
     setLoading(true)
+    setError('')
     try {
       const res = await planService.generateAnalysis(planId)
       setAnalysis(res.data)
       onUpdate()
-    } catch { alert('生成分析失败，请检查 API 配置') }
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.detail || '生成分析失败'
+      if (errorMsg.includes('VIP') || errorMsg.includes('会员')) {
+        setError('vip_required')
+      } else {
+        setError(errorMsg)
+      }
+    }
     setLoading(false)
   }
 
@@ -46,7 +56,32 @@ export default function AnalysisCard({ planId, status, onUpdate }: {
 
   return (
     <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-8 mb-6">
-      <h2 className="text-lg font-semibold mb-4">需求分析</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">需求分析</h2>
+        <span className="px-2 py-1 rounded-md text-xs font-medium bg-gradient-to-r from-amber-500 to-orange-500 text-white">VIP</span>
+      </div>
+
+      {error === 'vip_required' && (
+        <div className="mb-4 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+          <div className="flex items-start gap-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-500 mt-0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-200 mb-1">此功能需要 VIP 会员</p>
+              <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">升级 VIP 解锁 AI 智能分析功能，享受完整的学习规划体验</p>
+              <Link to="/vip" className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300">
+                立即升级 VIP →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && error !== 'vip_required' && (
+        <div className="mb-4 p-3 rounded-lg text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
       {analysis ? (
         <div className="space-y-4">
           {[

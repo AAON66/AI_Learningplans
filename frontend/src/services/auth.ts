@@ -5,6 +5,7 @@ export const authService = {
     api.post('/auth/register', { email, password }),
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
+  me: () => api.get('/auth/me'),
   getMe: () => api.get('/auth/me'),
   changePassword: (old_password: string, new_password: string) =>
     api.post('/auth/change-password', { old_password, new_password }),
