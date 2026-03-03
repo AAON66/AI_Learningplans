@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { planService } from '../../services/planService'
+import api from '../../services/api'
 
 interface Stage { id: number; order_index: number; stage_name: string }
 interface Resource {
@@ -14,9 +15,17 @@ export default function ResourceCard({ planId, status, stages, onUpdate }: {
   const [resources, setResources] = useState<Record<number, Resource[]>>({})
   const [loading, setLoading] = useState<number | null>(null)
   const [confirming, setConfirming] = useState(false)
+  const [isVip, setIsVip] = useState(false)
 
   const canGenerate = ['content', 'planning'].includes(status)
   const show = ['content', 'method', 'active', 'completed'].includes(status)
+
+  useEffect(() => {
+    // 获取 VIP 状态
+    api.get('/api/v1/vip/status').then(r => {
+      setIsVip(r.data.is_vip)
+    }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (show && stages.length > 0) {
@@ -57,32 +66,57 @@ export default function ResourceCard({ planId, status, stages, onUpdate }: {
 
   return (
     <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-8 mb-6">
-      <h2 className="text-lg font-semibold mb-4">学习资源推荐</h2>
-      {stages.map(s => (
-        <div key={s.id} className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium">{s.order_index + 1}. {s.stage_name}</h3>
-            {canGenerate && (
-              <button onClick={() => recommend(s.id)} disabled={loading === s.id} className={btnOutline}>
-                {loading === s.id ? '推荐中...' : resources[s.id]?.length ? '重新推荐' : '推荐资源'}
-              </button>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">学习资源推荐</h2>
+        {!isVip && (
+          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">
+            升级VIP查看完整资源
+          </span>
+        )}
+      </div>
+      {stages.map(s => {
+        const stageResources = resources[s.id] || []
+        const displayResources = isVip ? stageResources : stageResources.slice(0, 2)
+        const hiddenCount = stageResources.length - displayResources.length
+
+        return (
+          <div key={s.id} className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium">{s.order_index + 1}. {s.stage_name}</h3>
+              {canGenerate && (
+                <button onClick={() => recommend(s.id)} disabled={loading === s.id} className={btnOutline}>
+                  {loading === s.id ? '推荐中...' : resources[s.id]?.length ? '重新推荐' : '推荐资源'}
+                </button>
+              )}
+            </div>
+            {displayResources.map(r => (
+              <div key={r.id} className="ml-4 mb-2 p-3 border border-gray-100 dark:border-gray-700 rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-xs text-brand-500 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded mr-2">{r.resource_type}</span>
+                    <span className="text-sm font-medium">{r.title}</span>
+                  </div>
+                  {r.estimated_hours && <span className="text-xs text-gray-400 whitespace-nowrap ml-2">{r.estimated_hours}h</span>}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{r.description}</p>
+                {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-xs text-brand-500 hover:underline mt-1 inline-block">{r.provider || r.url}</a>}
+              </div>
+            ))}
+            {hiddenCount > 0 && (
+              <div className="ml-4 p-3 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-amber-700 dark:text-amber-400">
+                    还有 {hiddenCount} 个资源，升级VIP查看
+                  </span>
+                  <a href="/vip" className="text-xs text-amber-600 dark:text-amber-400 hover:underline">
+                    立即升级 →
+                  </a>
+                </div>
+              </div>
             )}
           </div>
-          {resources[s.id]?.map(r => (
-            <div key={r.id} className="ml-4 mb-2 p-3 border border-gray-100 dark:border-gray-700 rounded-lg">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-xs text-brand-500 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded mr-2">{r.resource_type}</span>
-                  <span className="text-sm font-medium">{r.title}</span>
-                </div>
-                {r.estimated_hours && <span className="text-xs text-gray-400 whitespace-nowrap ml-2">{r.estimated_hours}h</span>}
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{r.description}</p>
-              {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-xs text-brand-500 hover:underline mt-1 inline-block">{r.provider || r.url}</a>}
-            </div>
-          ))}
-        </div>
-      ))}
+        )
+      })}
       {canGenerate && hasResources && (
         <div className="flex gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           <button onClick={confirmAll} disabled={confirming} className={btnPrimary}>

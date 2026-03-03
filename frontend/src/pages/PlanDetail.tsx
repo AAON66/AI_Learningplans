@@ -6,6 +6,7 @@ import AnalysisCard from '../components/analysis/AnalysisCard'
 import StageList from '../components/stage/StageList'
 import ResourceCard from '../components/resource/ResourceCard'
 import MethodCard from '../components/method/MethodCard'
+import api from '../services/api'
 
 interface Plan {
   id: number; title: string; goal: string; user_background: string;
@@ -27,13 +28,18 @@ export default function PlanDetail() {
   const [stages, setStages] = useState<{id: number; order_index: number; stage_name: string}[]>([])
   const [loading, setLoading] = useState(true)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isVip, setIsVip] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   const reload = () => {
     planService.get(planId).then(r => { setPlan(r.data); setLoading(false) })
     planService.getStages(planId).then(r => setStages(r.data)).catch(() => {})
   }
 
-  useEffect(() => { reload() }, [planId])
+  useEffect(() => {
+    reload()
+    api.get('/api/v1/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => {})
+  }, [planId])
 
   if (loading) return <div className="text-center py-10 text-gray-400">加载中...</div>
   if (!plan) return <div className="text-center py-10 text-red-500">计划不存在</div>
@@ -52,6 +58,66 @@ export default function PlanDetail() {
       console.error('删除失败:', error)
       alert('删除失败，请重试')
     }
+  }
+
+  const handleExport = async () => {
+    if (!isVip) {
+      alert('数据导出是 VIP 专属功能，请先升级 VIP')
+      navigate('/vip')
+      return
+    }
+
+    setExporting(true)
+    try {
+      // 简单的文本导出功能
+      const exportData = {
+        title: plan?.title,
+        goal: plan?.goal,
+        background: plan?.user_background,
+        difficulty: DIFFICULTY_MAP[plan?.difficulty_level || ''] || plan?.difficulty_level,
+        duration: plan?.total_duration_days,
+        status: plan?.status,
+        stages: stages.map(s => s.stage_name),
+        exportTime: new Date().toLocaleString('zh-CN')
+      }
+
+      const content = `
+学习计划导出报告
+==================
+
+计划名称：${exportData.title}
+学习目标：${exportData.goal}
+背景信息：${exportData.background || '无'}
+难度等级：${exportData.difficulty}
+计划时长：${exportData.duration} 天
+当前状态：${exportData.status}
+
+学习阶段：
+${exportData.stages.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+导出时间：${exportData.exportTime}
+导出用户：VIP 会员
+
+---
+由智能学习计划系统生成
+      `.trim()
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `学习计划-${plan?.title}-${Date.now()}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      alert('导出成功！')
+    } catch (error) {
+      console.error('导出失败:', error)
+      alert('导出失败，请重试')
+    }
+    setExporting(false)
   }
 
   const btnPrimary = "px-4 py-2 rounded-lg text-sm font-medium transition-all"
@@ -81,6 +147,26 @@ export default function PlanDetail() {
               <Link to={`/plans/${planId}/progress`} className={btnOutline}>记录进度</Link>
               <Link to={`/plans/${planId}/stats`} className={btnOutline}>查看统计</Link>
             </>
+          )}
+          {isVip ? (
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="px-4 py-2 rounded-lg text-sm border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all flex items-center gap-1.5 disabled:opacity-50">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              {exporting ? '导出中...' : '导出数据'}
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/vip')}
+              className="px-4 py-2 rounded-lg text-sm border border-amber-200 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              VIP导出
+            </button>
           )}
           <button
             onClick={() => setShowDeleteConfirm(true)}

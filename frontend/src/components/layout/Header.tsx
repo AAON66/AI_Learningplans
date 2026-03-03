@@ -2,16 +2,23 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useState, useEffect } from 'react'
 import { authService } from '../../services/auth'
+import api from '../../services/api'
 
 export default function Header({ theme }: { theme: { dark: boolean; toggle: () => void } }) {
   const { isAuthenticated, user, logout } = useAuth()
   const nav = useNavigate()
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isVip, setIsVip] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated) {
       authService.me().then(r => {
         setIsAdmin(r.data.is_admin === 1)
+      }).catch(() => {})
+
+      // 获取 VIP 状态
+      api.get('/api/v1/vip/status').then(r => {
+        setIsVip(r.data.is_vip)
       }).catch(() => {})
     }
   }, [isAuthenticated])
@@ -38,7 +45,17 @@ export default function Header({ theme }: { theme: { dark: boolean; toggle: () =
                   管理
                 </Link>
               )}
-              <Link to="/profile" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors">{user?.email}</Link>
+              <Link to="/profile" className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors flex items-center gap-1.5">
+                {user?.email}
+                {isVip && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    VIP
+                  </span>
+                )}
+              </Link>
               <button onClick={() => { logout(); nav('/login') }} className="text-sm text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">退出</button>
             </>
           ) : (

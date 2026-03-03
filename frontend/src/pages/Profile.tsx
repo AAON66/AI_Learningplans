@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 import { authService } from '../services/auth'
+import api from '../services/api'
+import { Link } from 'react-router-dom'
 
 export default function Profile() {
   const [email, setEmail] = useState(localStorage.getItem('user_email') || '')
   const [createdAt, setCreatedAt] = useState('')
   const [hasQA, setHasQA] = useState(false)
+  const [isVip, setIsVip] = useState(false)
+  const [vipExpire, setVipExpire] = useState('')
 
   const [oldPwd, setOldPwd] = useState('')
   const [newPwd, setNewPwd] = useState('')
@@ -26,6 +30,14 @@ export default function Profile() {
       if (r.data.security_question) {
         setHasQA(true)
         setQuestion(r.data.security_question)
+      }
+    }).catch(() => {})
+
+    // 获取 VIP 状态
+    api.get('/api/v1/vip/status').then(r => {
+      setIsVip(r.data.is_vip)
+      if (r.data.vip_expire_at) {
+        setVipExpire(new Date(r.data.vip_expire_at).toLocaleDateString())
       }
     }).catch(() => {})
   }, [])
@@ -76,6 +88,25 @@ export default function Profile() {
             <span className="text-gray-500 dark:text-gray-400">邮箱</span>
             <span className="text-gray-900 dark:text-gray-100">{email || '加载中...'}</span>
           </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 dark:text-gray-400">会员状态</span>
+            {isVip ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-sm">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                VIP会员
+              </span>
+            ) : (
+              <span className="text-gray-500">普通用户</span>
+            )}
+          </div>
+          {isVip && vipExpire && (
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">VIP到期</span>
+              <span className="text-amber-600 dark:text-amber-400">{vipExpire}</span>
+            </div>
+          )}
           {createdAt && (
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">注册时间</span>
@@ -88,6 +119,28 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {isVip && (
+        <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+          <h2 className="text-base font-medium mb-4">VIP 专属功能</h2>
+          <Link to="/theme-settings" className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+                </svg>
+              </div>
+              <div>
+                <p className="font-medium text-sm">自定义主题</p>
+                <p className="text-xs text-gray-500">选择您喜欢的配色方案</p>
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </Link>
+        </div>
+      )}
 
       <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         <h2 className="text-base font-medium mb-4">修改密码</h2>

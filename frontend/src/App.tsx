@@ -14,6 +14,7 @@ import VIP from './pages/VIP'
 import Dashboard from './pages/Dashboard'
 import AdminVIP from './pages/AdminVIP'
 import AdminLogin from './pages/AdminLogin'
+import ThemeSettings from './pages/ThemeSettings'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useTheme } from './hooks/useTheme'
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/plans/:id/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/vip" element={<ProtectedRoute><VIP /></ProtectedRoute>} />
+          <Route path="/theme-settings" element={<ProtectedRoute><ThemeSettings /></ProtectedRoute>} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<Dashboard />} />
           <Route path="/admin/vip" element={<AdminVIP />} />
