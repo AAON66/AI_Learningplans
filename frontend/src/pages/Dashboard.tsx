@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import AILoadingFull from '../components/common/AILoadingFull'
 
 interface DashboardStats {
   users: {
@@ -89,7 +90,7 @@ export default function Dashboard() {
   }
 
   if (!isAuthenticated || loading) {
-    return <div className="text-center py-10 text-gray-400">加载中...</div>
+    return <AILoadingFull text="加载管理面板" subtext="正在获取系统数据..." />
   }
 
   if (!stats) {

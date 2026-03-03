@@ -17,7 +17,7 @@ export default function ThemeSettings() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    api.get('/api/v1/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => {})
+    api.get('/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => setIsVip(false))
     const saved = localStorage.getItem('color-theme') || 'default'
     setCurrentTheme(saved)
   }, [])

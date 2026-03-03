@@ -1,28 +1,36 @@
 import { useState, useEffect } from 'react'
 import { planService } from '../../services/planService'
 import api from '../../services/api'
+import AILoadingSpinner from '../common/AILoadingSpinner'
 
 interface Method {
   id: number; stage_id: number; method_type: string; title: string;
   content: string; schedule: string; confirmed: boolean;
 }
 
-export default function MethodCard({ planId, status, onUpdate }: {
-  planId: number; status: string; onUpdate: () => void
+export default function MethodCard({ planId, status, onUpdate, isVip: isVipProp }: {
+  planId: number; status: string; onUpdate: () => void; isVip?: boolean
 }) {
   const [methods, setMethods] = useState<Method[]>([])
   const [loading, setLoading] = useState(false)
-  const [isVip, setIsVip] = useState(false)
+  const [isVipState, setIsVipState] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const isVip = isVipProp !== undefined ? isVipProp : isVipState
 
   const canGenerate = ['content', 'method'].includes(status)
   const show = ['method', 'active', 'completed'].includes(status)
 
   useEffect(() => {
-    // 获取 VIP 状态
-    api.get('/api/v1/vip/status').then(r => {
-      setIsVip(r.data.is_vip)
-    }).catch(() => {})
-  }, [])
+    // 只在没有传入 isVip prop 时才获取 VIP 状态
+    if (isVipProp === undefined) {
+      api.get('/vip/status').then(r => {
+        setIsVipState(r.data.is_vip)
+      }).catch(() => {
+        setIsVipState(false)
+      })
+    }
+  }, [isVipProp])
 
   useEffect(() => {
     if (show) {
@@ -56,7 +64,7 @@ export default function MethodCard({ planId, status, onUpdate }: {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">学习方式</h2>
         {isVip && methods.length > 0 && (
-          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded flex items-center gap-1">
+          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded flex items-center gap-1 animate-pulse">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
@@ -68,18 +76,33 @@ export default function MethodCard({ planId, status, onUpdate }: {
         <>
           <div className="space-y-3">
             {methods.map((m, idx) => {
-              // 非 VIP 用户只显示前 2 个方法的简略版本
-              const isHidden = !isVip && idx >= 2
-              const isSimplified = !isVip && idx < 2
+              // VIP 用户或已展开时显示全部，否则只显示前 2 个
+              const shouldShowAll = isVip || isExpanded
+              const isHidden = !shouldShowAll && idx >= 2
+              const isSimplified = !isVip && !isExpanded && idx < 2
+              const isVipExclusive = isVip && idx >= 2
 
               if (isHidden) return null
 
               return (
-                <div key={m.id} className="border border-gray-100 dark:border-gray-700 rounded-lg p-4">
+                <div
+                  key={m.id}
+                  className={`border border-gray-100 dark:border-gray-700 rounded-lg p-4 transition-all duration-300 ${
+                    isVipExclusive ? 'animate-fadeIn border-amber-200 dark:border-amber-900/50 bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-900/10 dark:to-transparent' : ''
+                  }`}
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <span className="text-xs text-brand-500 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded mr-2">{m.method_type}</span>
                       <span className="text-sm font-medium">{m.title}</span>
+                      {isVipExclusive && (
+                        <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
+                          <svg className="inline w-3 h-3 mr-0.5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                          VIP专享
+                        </span>
+                      )}
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
@@ -97,16 +120,39 @@ export default function MethodCard({ planId, status, onUpdate }: {
               )
             })}
           </div>
-          {!isVip && methods.length > 2 && (
-            <div className="mt-3 p-3 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-lg">
+          {methods.length > 2 && !isExpanded && (
+            <div className="mt-3 p-3 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-lg animate-fadeIn">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-amber-700 dark:text-amber-400">
-                  还有 {methods.length - 2} 个深度学习方法，升级VIP查看
+                  {isVip ? `还有 ${methods.length - 2} 个深度学习方法` : `还有 ${methods.length - 2} 个深度学习方法，升级VIP查看`}
                 </span>
-                <a href="/vip" className="text-xs text-amber-600 dark:text-amber-400 hover:underline">
-                  立即升级 →
-                </a>
+                {isVip ? (
+                  <button
+                    onClick={() => setIsExpanded(true)}
+                    className="text-xs text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1">
+                    展开全部
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                ) : (
+                  <a href="/vip" className="text-xs text-amber-600 dark:text-amber-400 hover:underline">
+                    立即升级 →
+                  </a>
+                )}
               </div>
+            </div>
+          )}
+          {isExpanded && methods.length > 2 && (
+            <div className="mt-3 flex justify-center">
+              <button
+                onClick={() => setIsExpanded(false)}
+                className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center gap-1">
+                收起
+                <svg className="w-3 h-3 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
             </div>
           )}
           {canGenerate && (
@@ -117,8 +163,8 @@ export default function MethodCard({ planId, status, onUpdate }: {
           )}
         </>
       ) : canGenerate ? (
-        <button onClick={generate} disabled={loading} className={btnPrimary}>
-          {loading ? 'AI 生成中...' : '生成学习方式'}
+        <button onClick={generate} disabled={loading} className={`${btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}>
+          {loading ? <AILoadingSpinner text="AI 生成中" size="sm" variant="button" /> : '生成学习方式'}
         </button>
       ) : null}
     </div>

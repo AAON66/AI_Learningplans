@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { planService } from '../../services/planService'
+import AILoadingSpinner from '../common/AILoadingSpinner'
 
 interface Analysis {
   id: number; analysis_result: string; key_points: string;
@@ -102,8 +103,8 @@ export default function AnalysisCard({ planId, status, onUpdate }: {
           )}
         </div>
       ) : (
-        <button onClick={generate} disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-          {loading ? 'AI 分析中...' : '开始 AI 需求分析'}
+        <button onClick={generate} disabled={loading} className={`${btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}>
+          {loading ? <AILoadingSpinner text="AI 分析中" size="sm" variant="button" /> : '开始 AI 需求分析'}
         </button>
       )}
     </div>

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ...core.database import get_db
 from ...core.security import hash_password, verify_password, create_access_token, create_refresh_token, get_current_user
 from ...models.user import User
-from ...schemas.user import UserCreate, UserLogin, UserOut, TokenResponse, RefreshRequest
+from ...schemas.user import UserCreate, UserLogin, UserOut, TokenResponse, RefreshRequest, UserUpdate
 from jose import jwt, JWTError
 from ...core.config import settings
 
@@ -42,6 +42,18 @@ class ForgotPassword(BaseModel):
 
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
+    return user
+
+@router.put("/me", response_model=UserOut)
+def update_me(data: UserUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    if data.username is not None:
+        user.username = data.username
+    if data.security_question is not None:
+        user.security_question = data.security_question
+    if data.security_answer is not None:
+        user.security_answer = data.security_answer.lower().strip()
+    db.commit()
+    db.refresh(user)
     return user
 
 @router.post("/change-password")

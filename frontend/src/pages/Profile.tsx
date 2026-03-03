@@ -34,12 +34,14 @@ export default function Profile() {
     }).catch(() => {})
 
     // 获取 VIP 状态
-    api.get('/api/v1/vip/status').then(r => {
+    api.get('/vip/status').then(r => {
       setIsVip(r.data.is_vip)
-      if (r.data.vip_expire_at) {
-        setVipExpire(new Date(r.data.vip_expire_at).toLocaleDateString())
+      if (r.data.expire_at) {
+        setVipExpire(new Date(r.data.expire_at).toLocaleDateString())
       }
-    }).catch(() => {})
+    }).catch(() => {
+      setIsVip(false)
+    })
   }, [])
 
   const handleChangePwd = async (e: React.FormEvent) => {

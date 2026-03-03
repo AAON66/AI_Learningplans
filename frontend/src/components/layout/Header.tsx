@@ -17,9 +17,11 @@ export default function Header({ theme }: { theme: { dark: boolean; toggle: () =
       }).catch(() => {})
 
       // 获取 VIP 状态
-      api.get('/api/v1/vip/status').then(r => {
+      api.get('/vip/status').then(r => {
         setIsVip(r.data.is_vip)
-      }).catch(() => {})
+      }).catch(() => {
+        setIsVip(false)
+      })
     }
   }, [isAuthenticated])
   return (

@@ -6,6 +6,7 @@ import AnalysisCard from '../components/analysis/AnalysisCard'
 import StageList from '../components/stage/StageList'
 import ResourceCard from '../components/resource/ResourceCard'
 import MethodCard from '../components/method/MethodCard'
+import AILoadingFull from '../components/common/AILoadingFull'
 import api from '../services/api'
 
 interface Plan {
@@ -38,10 +39,20 @@ export default function PlanDetail() {
 
   useEffect(() => {
     reload()
-    api.get('/api/v1/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => {})
+    api.get('/vip/status')
+      .then(r => {
+        console.log('[PlanDetail] VIP Status API Response:', r.data)
+        console.log('[PlanDetail] Setting isVip to:', r.data.is_vip)
+        setIsVip(r.data.is_vip)
+      })
+      .catch(err => {
+        console.error('[PlanDetail] Failed to get VIP status:', err)
+        console.log('[PlanDetail] Setting isVip to false due to error')
+        setIsVip(false)
+      })
   }, [planId])
 
-  if (loading) return <div className="text-center py-10 text-gray-400">加载中...</div>
+  if (loading) return <AILoadingFull text="加载计划详情" subtext="正在获取学习计划数据..." />
   if (!plan) return <div className="text-center py-10 text-red-500">计划不存在</div>
 
   const handleAction = async (action: 'start' | 'pause' | 'complete') => {
@@ -177,8 +188,8 @@ ${exportData.stages.map((s, i) => `${i + 1}. ${s}`).join('\n')}
       </div>
       <AnalysisCard planId={planId} status={plan.status} onUpdate={reload} />
       <StageList planId={planId} status={plan.status} onUpdate={reload} />
-      <ResourceCard planId={planId} status={plan.status} stages={stages} onUpdate={reload} />
-      <MethodCard planId={planId} status={plan.status} onUpdate={reload} />
+      <ResourceCard planId={planId} status={plan.status} stages={stages} onUpdate={reload} isVip={isVip} />
+      <MethodCard planId={planId} status={plan.status} onUpdate={reload} isVip={isVip} />
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteConfirm(false)}>

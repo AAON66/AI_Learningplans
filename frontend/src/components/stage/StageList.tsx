@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { planService } from '../../services/planService'
+import AILoadingSpinner from '../common/AILoadingSpinner'
 
 interface Stage {
   id: number; order_index: number; stage_name: string;
@@ -67,8 +68,8 @@ export default function StageList({ planId, status, onUpdate }: {
           )}
         </>
       ) : canGenerate ? (
-        <button onClick={generate} disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-          {loading ? 'AI 生成中...' : '生成学习阶段'}
+        <button onClick={generate} disabled={loading} className={`${btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}>
+          {loading ? <AILoadingSpinner text="AI 生成中" size="sm" variant="button" /> : '生成学习阶段'}
         </button>
       ) : null}
     </div>

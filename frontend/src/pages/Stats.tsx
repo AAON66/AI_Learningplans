@@ -11,7 +11,7 @@ export default function Stats() {
 
   useEffect(() => {
     planService.getStats(planId).then(r => setStats(r.data))
-    api.get('/api/v1/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => {})
+    api.get('/vip/status').then(r => setIsVip(r.data.is_vip)).catch(() => setIsVip(false))
   }, [planId])
 
   if (!stats) return <div className="text-center py-10 text-gray-400">加载中...</div>
