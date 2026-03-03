@@ -22,8 +22,8 @@ export default function CreatePlan() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-8">创建学习计划</h1>
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800/50 p-8 rounded-xl border border-gray-200 dark:border-gray-800 space-y-5">
+      <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">创建学习计划</h1>
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800/50 p-5 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-800 space-y-4 sm:space-y-5">
         <div>
           <label className={labelCls}>计划标题</label>
           <input value={form.title} onChange={e => setForm({...form, title: e.target.value})}
@@ -39,7 +39,7 @@ export default function CreatePlan() {
           <textarea value={form.user_background} onChange={e => setForm({...form, user_background: e.target.value})}
             className={`${inputCls} h-20 resize-none`} placeholder="当前水平、可用时间等" />
         </div>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           <div>
             <label className={labelCls}>学习天数</label>
             <input type="number" value={form.total_duration_days}

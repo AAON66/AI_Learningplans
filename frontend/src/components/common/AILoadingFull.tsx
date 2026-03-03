@@ -5,7 +5,7 @@ interface AILoadingFullProps {
 
 export default function AILoadingFull({ text = 'AI 正在思考', subtext }: AILoadingFullProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4">
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-950 z-40">
       {/* 脉动的 AI 大脑图标 */}
       <div className="relative mb-6">
         {/* 外圈脉动光环 */}
