@@ -11,7 +11,7 @@ export default function Header({ theme }: { theme: { dark: boolean; toggle: () =
   const [isVip, setIsVip] = useState(false)
   const [username, setUsername] = useState('')
   const [showMenu, setShowMenu] = useState(false)
-  const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [menuTimeout, setMenuTimeout] = useState<number | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleMouseEnter = () => {

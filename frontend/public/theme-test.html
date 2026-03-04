@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主题测试</title>
+    <style>
+        /* 默认蓝色主题 */
+        :root, [data-theme="default"] {
+            --brand-500: 51 112 255;
+        }
+        [data-theme="orange"] {
+            --brand-500: 249 115 22;
+        }
+        [data-theme="purple"] {
+            --brand-500: 168 85 247;
+        }
+        [data-theme="green"] {
+            --brand-500: 16 185 129;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .test-box {
+            width: 200px;
+            height: 100px;
+            background: rgb(var(--brand-500));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .info {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>主题切换测试</h1>
+
+    <div class="info">
+        <strong>当前主题:</strong> <span id="current">default</span><br>
+        <strong>CSS变量值:</strong> <span id="css-var">-</span>
+    </div>
+
+    <div class="test-box">测试颜色</div>
+
+    <div>
+        <button onclick="setTheme('default')">默认蓝</button>
+        <button onclick="setTheme('orange')">活力橙</button>
+        <button onclick="setTheme('purple')">优雅紫</button>
+        <button onclick="setTheme('green')">清新绿</button>
+    </div>
+
+    <script>
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('current').textContent = theme;
+
+            const style = getComputedStyle(document.documentElement);
+            const value = style.getPropertyValue('--brand-500');
+            document.getElementById('css-var').textContent = value;
+
+            console.log('切换到主题:', theme, '变量值:', value);
+        }
+
+        // 初始化
+        setTheme('default');
+    </script>
+</body>
+</html>

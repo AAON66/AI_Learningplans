@@ -3,18 +3,17 @@ import { authService } from '../services/auth'
 import api from '../services/api'
 import { useNavigate } from 'react-router-dom'
 
-const THEMES = [
-  { id: 'default', name: '默认蓝', colors: 'from-blue-500 to-blue-600', free: true },
-  { id: 'purple', name: '优雅紫', colors: 'from-purple-500 to-purple-600', free: false },
-  { id: 'green', name: '清新绿', colors: 'from-green-500 to-green-600', free: false },
-  { id: 'orange', name: '活力橙', colors: 'from-orange-500 to-orange-600', free: false },
-  { id: 'pink', name: '浪漫粉', colors: 'from-pink-500 to-pink-600', free: false },
-  { id: 'teal', name: '海洋青', colors: 'from-teal-500 to-teal-600', free: false },
+const EFFECTS = [
+  { id: 'default', name: '彩色粒子', icon: '✨', free: true, desc: '多彩粒子跟随鼠标' },
+  { id: 'fireworks', name: '烟花特效', icon: '🎆', free: false, desc: '绚丽烟花效果' },
+  { id: 'stars', name: '星星轨迹', icon: '⭐', free: false, desc: '闪烁星星跟随' },
+  { id: 'hearts', name: '爱心飘落', icon: '❤️', free: false, desc: '浪漫爱心特效' },
+  { id: 'none', name: '无特效', icon: '🚫', free: true, desc: '关闭鼠标特效' },
 ]
 
 export default function Settings() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'account' | 'theme' | 'security'>('account')
+  const [activeTab, setActiveTab] = useState<'account' | 'effect' | 'security'>('account')
 
   // 账号信息
   const [email, setEmail] = useState('')
@@ -44,8 +43,8 @@ export default function Settings() {
   const [qaErr, setQaErr] = useState('')
   const [qaLoading, setQaLoading] = useState(false)
 
-  // 主题设置
-  const [currentTheme, setCurrentTheme] = useState('default')
+  // 鼠标特效设置
+  const [currentEffect, setCurrentEffect] = useState('default')
 
   useEffect(() => {
     // 获取用户信息
@@ -68,9 +67,9 @@ export default function Settings() {
       }
     }).catch(() => setIsVip(false))
 
-    // 获取当前主题
-    const saved = localStorage.getItem('color-theme') || 'default'
-    setCurrentTheme(saved)
+    // 获取当前鼠标特效
+    const saved = localStorage.getItem('mouse-effect') || 'default'
+    setCurrentEffect(saved)
   }, [])
 
   const handleUsernameUpdate = async () => {
@@ -84,8 +83,8 @@ export default function Settings() {
       setEditingUsername(false)
       setUsernameMsg('用户名更新成功')
       setTimeout(() => setUsernameMsg(''), 3000)
-    } catch {
-      setUsernameMsg('更新失败，请重试')
+    } catch (err: any) {
+      setUsernameMsg(err.response?.data?.detail || '更新失败，请重试')
     }
   }
 
@@ -121,36 +120,19 @@ export default function Settings() {
     setQaLoading(false)
   }
 
-  const handleThemeChange = (themeId: string, isFree: boolean) => {
+  const handleEffectChange = (effectId: string, isFree: boolean) => {
     if (!isFree && !isVip) {
       navigate('/vip')
       return
     }
-    setCurrentTheme(themeId)
-    localStorage.setItem('color-theme', themeId)
-
-    // 应用主题颜色到CSS变量
-    const root = document.documentElement
-    const themeColors: Record<string, { primary: string; secondary: string }> = {
-      default: { primary: '59 130 246', secondary: '37 99 235' },
-      purple: { primary: '168 85 247', secondary: '147 51 234' },
-      green: { primary: '34 197 94', secondary: '22 163 74' },
-      orange: { primary: '249 115 22', secondary: '234 88 12' },
-      pink: { primary: '236 72 153', secondary: '219 39 119' },
-      teal: { primary: '20 184 166', secondary: '13 148 136' },
-    }
-
-    const colors = themeColors[themeId] || themeColors.default
-    root.style.setProperty('--color-brand-500', colors.primary)
-    root.style.setProperty('--color-brand-600', colors.secondary)
-
-    // 不需要刷新页面，直接应用
-    // window.location.reload()
+    setCurrentEffect(effectId)
+    localStorage.setItem('mouse-effect', effectId)
+    window.location.reload()
   }
 
   const tabs = [
     { id: 'account' as const, name: '账号设置', icon: '👤' },
-    { id: 'theme' as const, name: '主题设置', icon: '🎨' },
+    { id: 'effect' as const, name: '特效设置', icon: '✨' },
     { id: 'security' as const, name: '安全设置', icon: '🔒' },
   ]
 
@@ -258,36 +240,41 @@ export default function Settings() {
         </div>
       )}
 
-      {/* 主题设置 */}
-      {activeTab === 'theme' && (
+      {/* 特效设置 */}
+      {activeTab === 'effect' && (
         <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-          <h2 className="text-lg font-semibold mb-4">选择主题</h2>
+          <h2 className="text-lg font-semibold mb-4">鼠标特效</h2>
           {!isVip && (
             <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/50 rounded-lg">
               <p className="text-sm text-amber-700 dark:text-amber-400">
-                🌟 升级 VIP 解锁所有主题配色
+                🌟 升级 VIP 解锁所有鼠标特效
               </p>
             </div>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {THEMES.map(theme => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {EFFECTS.map(effect => (
               <button
-                key={theme.id}
-                onClick={() => handleThemeChange(theme.id, theme.free)}
-                disabled={!theme.free && !isVip}
-                className={`relative p-4 rounded-xl border-2 transition-all ${
-                  currentTheme === theme.id
+                key={effect.id}
+                onClick={() => handleEffectChange(effect.id, effect.free)}
+                disabled={!effect.free && !isVip}
+                className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                  currentEffect === effect.id
                     ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                } ${!theme.free && !isVip ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                <div className={`w-full h-16 rounded-lg bg-gradient-to-r ${theme.colors} mb-3`}></div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{theme.name}</p>
-                {!theme.free && (
+                } ${!effect.free && !isVip ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-3xl">{effect.icon}</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{effect.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{effect.desc}</p>
+                  </div>
+                </div>
+                {!effect.free && (
                   <span className="absolute top-2 right-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded">
                     VIP
                   </span>
                 )}
-                {currentTheme === theme.id && (
+                {currentEffect === effect.id && (
                   <div className="absolute top-2 left-2 w-5 h-5 bg-brand-500 rounded-full flex items-center justify-center">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>

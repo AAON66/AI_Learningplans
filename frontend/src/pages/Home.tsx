@@ -138,11 +138,11 @@ export default function Home() {
               free: '不可用'
             },
             {
-              icon: '🎨',
-              title: '自定义主题',
-              desc: '多种主题颜色选择，打造个性化学习环境',
+              icon: '✨',
+              title: '鼠标特效',
+              desc: '多种炫酷鼠标特效，包括烟花、星星、爱心等效果',
               badge: 'VIP',
-              free: '默认主题'
+              free: '基础特效'
             },
             {
               icon: '🏆',

@@ -122,28 +122,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {isVip && (
-        <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-          <h2 className="text-base font-medium mb-4">VIP 专属功能</h2>
-          <Link to="/theme-settings" className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium text-sm">自定义主题</p>
-                <p className="text-xs text-gray-500">选择您喜欢的配色方案</p>
-              </div>
-            </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </Link>
-        </div>
-      )}
-
       <div className="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         <h2 className="text-base font-medium mb-4">修改密码</h2>
         <form onSubmit={handleChangePwd} className="space-y-4">

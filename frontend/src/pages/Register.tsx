@@ -1,17 +1,23 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import SliderCaptcha from '../components/auth/SliderCaptcha'
 
 export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [captchaVerified, setCaptchaVerified] = useState(false)
   const { register } = useAuth()
   const nav = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!captchaVerified) {
+      setError('请完成滑块验证')
+      return
+    }
     try {
       await register(email, password)
       nav('/plans')
@@ -35,6 +41,7 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <input type="email" placeholder="邮箱地址" value={email} onChange={e => setEmail(e.target.value)} className={inputCls} required />
         <input type="password" placeholder="密码（至少6位）" value={password} onChange={e => setPassword(e.target.value)} className={inputCls} required minLength={6} />
+        <SliderCaptcha onSuccess={() => setCaptchaVerified(true)} />
         <button type="submit" className="w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white py-2.5 rounded-lg hover:shadow-lg hover:shadow-brand-500/25 transition-all text-sm font-medium">注册</button>
       </form>
       <p className="text-center mt-6 text-sm text-gray-400">

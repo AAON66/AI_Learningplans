@@ -102,7 +102,7 @@ export default function VIP() {
             { icon: '💡', title: '学习方法建议', desc: '定制化学习方法指导', free: '基础' },
             { icon: '📈', title: '高级统计分析', desc: '详细图表、趋势分析、学习报告', free: '基础统计' },
             { icon: '📥', title: '数据导出', desc: '导出学习数据为PDF/Excel', free: '不可用' },
-            { icon: '🎨', title: '自定义主题', desc: '多种主题颜色选择', free: '默认主题' },
+            { icon: '✨', title: '鼠标特效', desc: '烟花、星星、爱心等炫酷特效', free: '基础特效' },
             { icon: '🏆', title: 'VIP专属徽章', desc: '显示VIP身份标识', free: '无' },
             { icon: '⏰', title: '学习提醒', desc: '邮件和站内消息提醒', free: '无' },
             { icon: '🎯', title: '优先支持', desc: '专属客服通道', free: '普通支持' },

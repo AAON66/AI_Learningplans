@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
 from sqlalchemy.sql import func
-from ..database import Base
+from ..core.database import Base
 import enum
 
 class TaskStatus(str, enum.Enum):
