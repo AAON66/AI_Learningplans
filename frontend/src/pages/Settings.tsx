@@ -128,7 +128,24 @@ export default function Settings() {
     }
     setCurrentTheme(themeId)
     localStorage.setItem('color-theme', themeId)
-    window.location.reload()
+
+    // 应用主题颜色到CSS变量
+    const root = document.documentElement
+    const themeColors: Record<string, { primary: string; secondary: string }> = {
+      default: { primary: '59 130 246', secondary: '37 99 235' },
+      purple: { primary: '168 85 247', secondary: '147 51 234' },
+      green: { primary: '34 197 94', secondary: '22 163 74' },
+      orange: { primary: '249 115 22', secondary: '234 88 12' },
+      pink: { primary: '236 72 153', secondary: '219 39 119' },
+      teal: { primary: '20 184 166', secondary: '13 148 136' },
+    }
+
+    const colors = themeColors[themeId] || themeColors.default
+    root.style.setProperty('--color-brand-500', colors.primary)
+    root.style.setProperty('--color-brand-600', colors.secondary)
+
+    // 不需要刷新页面，直接应用
+    // window.location.reload()
   }
 
   const tabs = [

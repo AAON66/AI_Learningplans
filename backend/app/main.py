@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .core.config import settings
-from .api.v1 import auth, plans, analysis, stages, resources, methods, progress, vip, admin_auth, dashboard
+from .api.v1 import auth, plans, analysis, stages, resources, methods, progress, vip, admin_auth, dashboard, kanban
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,6 +29,7 @@ app.include_router(progress.router, prefix=api_prefix)
 app.include_router(vip.router, prefix=api_prefix)
 app.include_router(admin_auth.router, prefix=api_prefix)
 app.include_router(dashboard.router, prefix=api_prefix)
+app.include_router(kanban.router, prefix=api_prefix)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

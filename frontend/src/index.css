@@ -7,6 +7,23 @@
     @apply antialiased;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   }
+
+  /* 护眼模式优化 */
+  :root {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --text-primary: #2d3748;
+    --text-secondary: #4a5568;
+    --border-color: #e2e8f0;
+  }
+
+  .dark {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --border-color: #2d3748;
+  }
 }
 
 @layer utilities {
@@ -82,6 +99,42 @@
 
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* VIP资源流动边框 */
+  @keyframes border-flow {
+    0%, 100% {
+      border-color: rgb(251 191 36);
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+    50% {
+      border-color: rgb(245 158 11);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    }
+  }
+
+  .animate-border-flow {
+    animation: border-flow 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(251, 191, 36, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 3s infinite;
   }
 }
 

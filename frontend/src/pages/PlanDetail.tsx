@@ -7,6 +7,7 @@ import StageList from '../components/stage/StageList'
 import ResourceCard from '../components/resource/ResourceCard'
 import MethodCard from '../components/method/MethodCard'
 import AILoadingFull from '../components/common/AILoadingFull'
+import KanbanBoard from '../components/kanban/KanbanBoard'
 import api from '../services/api'
 import jsPDF from 'jspdf'
 
@@ -306,6 +307,9 @@ ${exportData.stages.map((s, i) => `${i + 1}. ${s}`).join('\n')}
       </div>
       <AnalysisCard planId={planId} status={plan.status} onUpdate={reload} />
       <StageList planId={planId} status={plan.status} onUpdate={reload} />
+      {isVip && ['active', 'completed'].includes(plan.status) && (
+        <KanbanBoard planId={planId} />
+      )}
       <ResourceCard planId={planId} status={plan.status} stages={stages} onUpdate={reload} isVip={isVip} />
       <MethodCard planId={planId} status={plan.status} onUpdate={reload} isVip={isVip} />
 

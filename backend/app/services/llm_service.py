@@ -21,8 +21,37 @@ async def call_deepseek(prompt: str) -> str:
 
 def parse_json_response(text: str):
     text = text.strip()
+    # 移除markdown代码块标记
     if "```json" in text:
         text = text.split("```json")[1].split("```")[0]
     elif "```" in text:
         text = text.split("```")[1].split("```")[0]
+
+    # 移除可能的markdown标题标记
+    lines = text.split('\n')
+    cleaned_lines = []
+    for line in lines:
+        # 跳过以###开头的markdown标题行
+        if line.strip().startswith('###'):
+            continue
+        cleaned_lines.append(line)
+
+    text = '\n'.join(cleaned_lines).strip()
+
+    # 尝试找到JSON数组或对象的开始和结束
+    start_idx = text.find('[')
+    if start_idx == -1:
+        start_idx = text.find('{')
+
+    if start_idx != -1:
+        # 找到对应的结束符号
+        if text[start_idx] == '[':
+            end_idx = text.rfind(']')
+            if end_idx != -1:
+                text = text[start_idx:end_idx+1]
+        else:
+            end_idx = text.rfind('}')
+            if end_idx != -1:
+                text = text[start_idx:end_idx+1]
+
     return json.loads(text.strip())

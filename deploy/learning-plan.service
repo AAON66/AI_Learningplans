@@ -1,0 +1,15 @@
+[Unit]
+Description=Learning Plan Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/learning-plan/backend
+Environment="PATH=/var/www/learning-plan/venv/bin"
+ExecStart=/var/www/learning-plan/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useState } from 'react'
+import AnimatedBackground from '../components/effects/AnimatedBackground'
 
 export default function Home() {
   const { isAuthenticated } = useAuth()
   const [showDemo, setShowDemo] = useState<string | null>(null)
 
   return (
-    <div>
+    <div className="relative">
+      <AnimatedBackground />
+      <div className="relative z-10">
       {/* Hero Section */}
       <div className="text-center py-12 sm:py-16 md:py-20 px-4">
         <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 text-xs sm:text-sm mb-6 sm:mb-8">
@@ -469,6 +472,7 @@ export default function Home() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }

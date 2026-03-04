@@ -136,16 +136,21 @@ export default function ResourceCard({ planId, status, stages, onUpdate, isVip: 
               return (
                 <div
                   key={r.id}
-                  className={`ml-4 mb-2 p-3 border border-gray-100 dark:border-gray-700 rounded-lg transition-all duration-300 ${
-                    isVipExclusive ? 'animate-fadeIn border-amber-200 dark:border-amber-900/50 bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-900/10 dark:to-transparent' : ''
+                  className={`ml-4 mb-2 p-3 border rounded-lg transition-all duration-300 relative overflow-hidden ${
+                    isVipExclusive
+                      ? 'animate-fadeIn border-amber-300 dark:border-amber-700 bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-900/10 dark:to-transparent animate-border-flow'
+                      : 'border-gray-100 dark:border-gray-700'
                   }`}
                 >
-                  <div className="flex justify-between items-start">
+                  {isVipExclusive && (
+                    <div className="absolute inset-0 animate-shimmer pointer-events-none"></div>
+                  )}
+                  <div className="flex justify-between items-start relative z-10">
                     <div>
                       <span className="text-xs text-brand-500 bg-brand-50 dark:bg-brand-900/20 px-2 py-0.5 rounded mr-2">{r.resource_type}</span>
                       <span className="text-sm font-medium">{r.title}</span>
                       {isVipExclusive && (
-                        <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
+                        <span className="ml-2 text-xs text-amber-600 dark:text-amber-400 font-medium">
                           <svg className="inline w-3 h-3 mr-0.5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                           </svg>
@@ -155,8 +160,8 @@ export default function ResourceCard({ planId, status, stages, onUpdate, isVip: 
                     </div>
                     {r.estimated_hours && <span className="text-xs text-gray-400 whitespace-nowrap ml-2">{r.estimated_hours}h</span>}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{r.description}</p>
-                  {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-xs text-brand-500 hover:underline mt-1 inline-block">{r.provider || r.url}</a>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 relative z-10">{r.description}</p>
+                  {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-xs text-brand-500 hover:underline mt-1 inline-block relative z-10">{r.provider || r.url}</a>}
                 </div>
               )
             })}

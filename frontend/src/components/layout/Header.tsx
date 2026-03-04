@@ -81,7 +81,7 @@ export default function Header({ theme }: { theme: { dark: boolean; toggle: () =
                   </button>
                   {showMenu && (
                     <div
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-[60]"
+                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-[100]"
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}>
                       <Link
