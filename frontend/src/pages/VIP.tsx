@@ -157,7 +157,14 @@ export default function VIP() {
         </form>
 
         <p className="text-gray-400 dark:text-gray-500 text-xs mt-4 text-center">
-          如需购买VIP卡密，请联系管理员
+          如需购买VIP卡密，请访问
+          <a
+            href="https://xfk.8u9.top/20387D21"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-500 hover:text-brand-600 ml-1 underline">
+            发卡网
+          </a>
         </p>
       </div>
     </div>

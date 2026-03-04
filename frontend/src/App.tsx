@@ -23,7 +23,7 @@ import { useTheme } from './hooks/useTheme'
 export default function App() {
   const theme = useTheme()
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="min-h-screen bg-[#fafaf5] dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       <MouseParticles />
       <Header theme={theme} />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">

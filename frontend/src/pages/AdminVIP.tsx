@@ -142,18 +142,18 @@ export default function AdminVIP() {
         return
       }
 
-      // 生成CSV内容
+      // 生成导出内容
       const headers = ['卡密', '有效天数', '状态', '使用者ID', '使用时间', '创建时间']
       const csvContent = [
-        headers.join(','),
+        headers.join('|'),
         ...filteredCards.map((card: VIPCard) => [
-          card.card_code,
-          card.duration_days,
+          String(card.card_code),
+          String(card.duration_days),
           card.is_used ? '已使用' : '未使用',
-          card.used_by || '',
+          card.used_by ? String(card.used_by) : '',
           card.used_at ? new Date(card.used_at).toLocaleString('zh-CN') : '',
           new Date(card.created_at).toLocaleString('zh-CN')
-        ].join(','))
+        ].join('|'))
       ].join('\n')
 
       // 添加BOM以支持中文
@@ -365,15 +365,15 @@ export default function AdminVIP() {
               <div>
                 <label className="block text-sm font-medium mb-2">有效天数</label>
                 <select
-                  value={exportDuration}
+                  value={String(exportDuration)}
                   onChange={e => setExportDuration(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500">
                   <option value="all">全部天数</option>
-                  <option value={7}>7天</option>
-                  <option value={30}>30天</option>
-                  <option value={90}>90天</option>
-                  <option value={180}>180天</option>
-                  <option value={365}>365天</option>
+                  <option value="7">7天</option>
+                  <option value="30">30天</option>
+                  <option value="90">90天</option>
+                  <option value="180">180天</option>
+                  <option value="365">365天</option>
                 </select>
               </div>
 

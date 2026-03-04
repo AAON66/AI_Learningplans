@@ -10,8 +10,8 @@
 
   /* 护眼模式优化 */
   :root {
-    --bg-primary: #f8f9fa;
-    --bg-secondary: #ffffff;
+    --bg-primary: #fafaf5;
+    --bg-secondary: #fefefe;
     --text-primary: #2d3748;
     --text-secondary: #4a5568;
     --border-color: #e2e8f0;
@@ -135,6 +135,34 @@
     );
     background-size: 1000px 100%;
     animation: shimmer 3s infinite;
+  }
+
+  /* VIP按钮动画 */
+  @keyframes vip-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.4), 0 0 40px rgba(251, 191, 36, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.3);
+    }
+  }
+
+  @keyframes vip-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .vip-button {
+    background: linear-gradient(90deg, #f59e0b, #f97316, #fb923c, #f59e0b);
+    background-size: 200% 100%;
+    animation: vip-gradient 3s ease infinite, vip-glow 2s ease-in-out infinite;
   }
 }
 

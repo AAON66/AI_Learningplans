@@ -1,19 +1,48 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { planService } from '../services/planService'
+import { validateContent } from '../utils/contentFilter'
 
 export default function CreatePlan() {
   const nav = useNavigate()
   const [form, setForm] = useState({ title: '', goal: '', user_background: '', total_duration_days: 30, difficulty_level: 'beginner' })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
+
+    // 验证标题
+    const titleCheck = validateContent(form.title)
+    if (!titleCheck.isValid) {
+      setError(titleCheck.error || '标题验证失败')
+      return
+    }
+
+    // 验证目标
+    const goalCheck = validateContent(form.goal)
+    if (!goalCheck.isValid) {
+      setError(goalCheck.error || '目标验证失败')
+      return
+    }
+
+    // 验证背景
+    if (form.user_background) {
+      const bgCheck = validateContent(form.user_background)
+      if (!bgCheck.isValid) {
+        setError(bgCheck.error || '背景验证失败')
+        return
+      }
+    }
+
     setLoading(true)
     try {
       const res = await planService.create(form)
       nav(`/plans/${res.data.id}`)
-    } catch { alert('创建失败') }
+    } catch {
+      setError('创建失败，请重试')
+    }
     setLoading(false)
   }
 
@@ -23,6 +52,11 @@ export default function CreatePlan() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">创建学习计划</h1>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800/50 p-5 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-800 space-y-4 sm:space-y-5">
         <div>
           <label className={labelCls}>计划标题</label>

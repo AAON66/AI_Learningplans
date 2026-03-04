@@ -169,8 +169,8 @@ export default function Home() {
         <div className="text-center mt-12">
           <Link
             to={isAuthenticated ? "/vip" : "/register"}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-3 rounded-lg hover:shadow-xl hover:shadow-amber-500/25 transition-all text-sm font-medium">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            className="vip-button inline-flex items-center gap-2 text-white px-8 py-3 rounded-lg hover:scale-105 transition-transform text-sm font-medium relative overflow-hidden">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="animate-pulse"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             {isAuthenticated ? '立即升级 VIP' : '注册并升级 VIP'}
           </Link>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">支持 7天/30天/90天/180天/365天 多种时长选择</p>
